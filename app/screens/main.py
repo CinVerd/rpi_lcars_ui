@@ -57,8 +57,10 @@ class ScreenMain(LcarsScreen):
 
         all_sprites.add(LcarsButton(colours.ORANGE, (107, 533), "AUDIO", self.radioHandler),
                         layer=4)
-        self.playingRadio = False
         self.p = vlc.MediaPlayer("http://radio.doubleclic.fr/radiovaldisere.mp3")
+        self.radioImage =  LcarsImage("assets/make_it_snow.jpg", (150, 122))
+        self.radioImage.visible = False
+        all_sprites.add(self.radioImage, layer=2)
 
         # gadgets        
         all_sprites.add(LcarsGifImage("assets/gadgets/fwscan.gif", (277, 556), 100), layer=1)
@@ -127,12 +129,10 @@ class ScreenMain(LcarsScreen):
             #Sound("http://radio.doubleclic.fr/radiovaldisere.mp3").play()
             #p = vlc.MediaPlayer("http://radio.doubleclic.fr/radiovaldisere.mp3")
             self.p.play()
-            self.playingRadio = True
+            self.radioImage.visible = True
         else:
-            print "Pausing"
             self.p.stop()
-            self.playingRadio = False
-
+            self.radioImage.visible = False
 
     
     def logoutHandler(self, item, event, clock):
