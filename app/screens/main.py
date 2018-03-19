@@ -1,6 +1,7 @@
 from datetime import datetime
 import pygame
 from pygame.mixer import Sound
+import vlc
 
 from ui import colours
 from ui.widgets.background import LcarsBackgroundImage, LcarsImage
@@ -53,6 +54,11 @@ class ScreenMain(LcarsScreen):
                         layer=4)
         all_sprites.add(LcarsButton(colours.PEACH, (107, 398), "WEATHER", self.weatherHandler),
                         layer=4)
+
+        all_sprites.add(LcarsButton(colours.ORANGE, (107, 533), "AUDIO", self.radioHandler),
+                        layer=4)
+        self.playingRadio = False
+        self.p = vlc.MediaPlayer("http://radio.doubleclic.fr/radiovaldisere.mp3")
 
         # gadgets        
         all_sprites.add(LcarsGifImage("assets/gadgets/fwscan.gif", (277, 556), 100), layer=1)
@@ -108,6 +114,26 @@ class ScreenMain(LcarsScreen):
         self.sensor_gadget.visible = False
         self.dashboard.visible = False
         self.weather.visible = True
+
+    def radioHandler(self, item, event, clock):
+        self.hideInfoText()
+        self.sensor_gadget.visible = False
+        self.dashboard.visible = False
+        self.weather.visible = False
+
+
+
+        if not self.p.is_playing():
+            #Sound("http://radio.doubleclic.fr/radiovaldisere.mp3").play()
+            #p = vlc.MediaPlayer("http://radio.doubleclic.fr/radiovaldisere.mp3")
+            self.p.play()
+            self.playingRadio = True
+        else:
+            print "Pausing"
+            self.p.stop()
+            self.playingRadio = False
+
+
     
     def logoutHandler(self, item, event, clock):
         from screens.authorize import ScreenAuthorize

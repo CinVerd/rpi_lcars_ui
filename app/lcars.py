@@ -3,7 +3,7 @@ from ui.ui import UserInterface
 
 # global config
 UI_PLACEMENT_MODE = True
-RESOLUTION = (800, 480)
+RESOLUTION = (720, 480)
 FPS = 60
 DEV_MODE = True
 
