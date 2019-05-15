@@ -1,4 +1,5 @@
 from screens.authorize import ScreenAuthorize
+from screens.main import ScreenMain
 from ui.ui import UserInterface
 
 # global config
@@ -8,7 +9,8 @@ FPS = 60
 DEV_MODE = True
 
 if __name__ == "__main__":
-    firstScreen = ScreenAuthorize()
+    #firstScreen = ScreenAuthorize()
+    firstScreen = ScreenMain()
     ui = UserInterface(firstScreen, RESOLUTION, UI_PLACEMENT_MODE, FPS, DEV_MODE)
 
     while (True):

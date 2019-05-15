@@ -10,9 +10,19 @@ from ui.widgets.lcars_widgets import *
 from ui.widgets.screen import LcarsScreen
 from ui.widgets.sprite import LcarsMoveToMouse
 
+# Two aspects:
+# Init sprites / UI stuff/
+# Init logical objects - handlers, behind UI stuff
+
+# 1. Init everything, default to set of "main" sprites
+# 2. On menu button press, hide all sprites, show specific ones. - Button handler does this
+# 2.1On sub item press, perform logic. - specific button logic does this
+# 3. How know when specific button is pressed - handler is defined for a widget. Button is subtype of widget
+
+
 class ScreenMain(LcarsScreen):
     def setup(self, all_sprites):
-        all_sprites.add(LcarsBackgroundImage("assets/lcars_screen_1b.png"),
+        all_sprites.add(LcarsBackgroundImage("assets/lcars_screen_1.png"),
                         layer=0)
         
         # panel text
@@ -20,66 +30,68 @@ class ScreenMain(LcarsScreen):
                         layer=1)
         all_sprites.add(LcarsText(colours.ORANGE, (0, 135), "HOME AUTOMATION", 2),
                         layer=1)
-        all_sprites.add(LcarsBlockMedium(colours.RED_BROWN, (145, 16), "LIGHTS"),
+        # ----------- Main Menu Buttons - move when more than one screen, move to parent class
+        all_sprites.add(LcarsBlockMedium(colours.RED_BROWN, (145, 16), "MAIN"),
                         layer=1)
-        all_sprites.add(LcarsBlockSmall(colours.ORANGE, (211, 16), "CAMERAS"),
+        all_sprites.add(LcarsBlockSmall(colours.ORANGE, (211, 16), "SETTINGS"),
                         layer=1)
         all_sprites.add(LcarsBlockLarge(colours.BEIGE, (249, 16), "ENERGY"),
                         layer=1)
+
+        # ----------- Main Menu Buttons End
         all_sprites.add(LcarsText(colours.BLACK, (444, 612), "192 168 0 3"),
                         layer=1)
-
-        # info text
-        all_sprites.add(LcarsText(colours.WHITE, (192, 174), "EVENT LOG:", 1.5),
-                        layer=3)
-        all_sprites.add(LcarsText(colours.BLUE, (244, 174), "2 ALARM ZONES TRIGGERED", 1.5),
-                        layer=3)
-        all_sprites.add(LcarsText(colours.BLUE, (286, 174), "14.3 kWh USED YESTERDAY", 1.5),
-                        layer=3)
-        all_sprites.add(LcarsText(colours.BLUE, (330, 174), "1.3 Tb DATA USED THIS MONTH", 1.5),
-                        layer=3)
-        self.info_text = all_sprites.get_sprites_from_layer(3)
 
         # date display
         self.stardate = LcarsText(colours.BLUE, (12, 380), "STAR DATE 2711.05 17:54:32", 1.5)
         self.lastClockUpdate = 0
         all_sprites.add(self.stardate, layer=1)
 
-        # buttons        
+        # sub buttons - layer 2
+        # Distance of 135 on y axis seems good
+        # Move to super class
         all_sprites.add(LcarsButton(colours.RED_BROWN, (6, 662), "LOGOUT", self.logoutHandler),
-                        layer=4)
-        all_sprites.add(LcarsButton(colours.BEIGE, (107, 127), "SENSORS", self.sensorsHandler),
-                        layer=4)
-        all_sprites.add(LcarsButton(colours.PURPLE, (107, 262), "GAUGES", self.gaugesHandler),
-                        layer=4)
-        all_sprites.add(LcarsButton(colours.PEACH, (107, 398), "WEATHER", self.weatherHandler),
+                        layer=2)
+        # -----------------------------------------------------------------------------------------
+        all_sprites.add(LcarsButton(colours.BEIGE, (107, 127), "LIGHTS", self.lights_handler),
+                        layer=2)
+        all_sprites.add(LcarsButton(colours.PURPLE, (107, 262), "AUDIO", self.audio_handler),
+                        layer=2)
+        all_sprites.add(LcarsButton(colours.PEACH, (107, 398), "SENSORS", self.sensors_handler),
+                        layer=2)
+        all_sprites.add(LcarsButton(colours.ORANGE, (107, 533), "PENDING", self.sensors_handler),
+                        layer=2)
+
+
+        # Audio -------------------------------------------------------------------------------
+        # Move to own section
+        # Audio Buttons - layer 4
+        all_sprites.add(LcarsButton(colours.PEACH, (200, 127), "VAL", self.audio_handler_play_val),
                         layer=4)
 
-        all_sprites.add(LcarsButton(colours.ORANGE, (107, 533), "AUDIO", self.radioHandler),
-                        layer=4)
-        self.p = vlc.MediaPlayer("http://radio.doubleclic.fr/radiovaldisere.mp3")
-        self.radioImage =  LcarsImage("assets/make_it_snow.jpg", (150, 122))
-        self.radioImage.visible = False
-        all_sprites.add(self.radioImage, layer=2)
+        self.section_audio_sprites = all_sprites.get_sprites_from_layer(4)
+        self.hideAudioSection()
+        # Audio Logic
+        self.section_audio_sources_val = vlc.MediaPlayer("http://radio.doubleclic.fr/radiovaldisere.mp3")
+        #self.section_audio_radio_image = LcarsImage("assets/make_it_snow.jpg", (150, 122))
+        #self.section_audio_radio_image.visible = False
+        #all_sprites.add(self.section_audio_radio_image, layer=4)
 
-        # gadgets        
-        all_sprites.add(LcarsGifImage("assets/gadgets/fwscan.gif", (277, 556), 100), layer=1)
-        
-        self.sensor_gadget = LcarsGifImage("assets/gadgets/lcars_anim2.gif", (235, 150), 100) 
-        self.sensor_gadget.visible = False
-        all_sprites.add(self.sensor_gadget, layer=2)
 
-        self.dashboard = LcarsImage("assets/gadgets/dashboard.png", (187, 232))
-        self.dashboard.visible = False
-        all_sprites.add(self.dashboard, layer=2) 
+        # -------------------------------------------------------------------------------------
+
+        # gadgets
 
         self.weather = LcarsImage("assets/weather.jpg", (188, 122))
         self.weather.visible = False
         all_sprites.add(self.weather, layer=2) 
 
-        #all_sprites.add(LcarsMoveToMouse(colours.WHITE), layer=1)
+        # all_sprites.add(LcarsMoveToMouse(colours.WHITE), layer=1)
         self.beep1 = Sound("assets/audio/panel/201.wav")
         Sound("assets/audio/panel/220.wav").play()
+
+    def hideAll(self):
+        self.hideAudioSection()
 
     def update(self, screenSurface, fpsClock):
         if pygame.time.get_ticks() - self.lastClockUpdate > 1000:
@@ -94,46 +106,34 @@ class ScreenMain(LcarsScreen):
         if event.type == pygame.MOUSEBUTTONUP:
             return False
 
-    def hideInfoText(self):
-        if self.info_text[0].visible:
-            for sprite in self.info_text:
+    def show_audio_section(self):
+        if not self.section_audio_sprites[0].visible:
+            for sprite in self.section_audio_sprites:
+                sprite.visible = True
+
+    def hideAudioSection(self):
+        if self.section_audio_sprites[0].visible:
+            for sprite in self.section_audio_sprites:
                 sprite.visible = False
-
-    def gaugesHandler(self, item, event, clock):
-        self.hideInfoText()
-        self.sensor_gadget.visible = False
-        self.dashboard.visible = True
-        self.weather.visible = False
-
-    def sensorsHandler(self, item, event, clock):
-        self.hideInfoText()
-        self.sensor_gadget.visible = True
-        self.dashboard.visible = False
-        self.weather.visible = False
     
     def weatherHandler(self, item, event, clock):
-        self.hideInfoText()
-        self.sensor_gadget.visible = False
-        self.dashboard.visible = False
+        self.hideAll()
         self.weather.visible = True
 
-    def radioHandler(self, item, event, clock):
-        self.hideInfoText()
-        self.sensor_gadget.visible = False
-        self.dashboard.visible = False
+    def audio_handler(self, item, event, clock):
+        self.hideAll()
+        self.show_audio_section()
         self.weather.visible = False
 
+    def audio_handler_play_val(self, item, event, clock):
+        from audio import play_val
+        play_val(self)
 
+    def lights_handler(self, item, event, clock):
+        print "Not implemented."
 
-        if not self.p.is_playing():
-            #Sound("http://radio.doubleclic.fr/radiovaldisere.mp3").play()
-            #p = vlc.MediaPlayer("http://radio.doubleclic.fr/radiovaldisere.mp3")
-            self.p.play()
-            self.radioImage.visible = True
-        else:
-            self.p.stop()
-            self.radioImage.visible = False
-
+    def sensors_handler(self, item, event, clock):
+        print "Not implemented."
     
     def logoutHandler(self, item, event, clock):
         from screens.authorize import ScreenAuthorize
