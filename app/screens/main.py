@@ -2,7 +2,7 @@ from datetime import datetime
 import pygame
 from pygame.mixer import Sound
 import vlc
-
+import audio
 from ui import colours
 from ui.widgets.background import LcarsBackgroundImage, LcarsImage
 from ui.widgets.gifimage import LcarsGifImage
@@ -62,21 +62,20 @@ class ScreenMain(LcarsScreen):
         all_sprites.add(LcarsButton(colours.ORANGE, (107, 533), "PENDING", self.sensors_handler),
                         layer=2)
 
-
         # Audio -------------------------------------------------------------------------------
         # Move to own section
         # Audio Buttons - layer 4
-        all_sprites.add(LcarsButton(colours.PEACH, (200, 127), "VAL", self.audio_handler_play_val),
-                        layer=4)
+        audio.initialize(self, all_sprites)
+        # all_sprites.add(LcarsButton(colours.PEACH, (200, 127), "VAL", self.audio_handler_play_val),
+        # layer=4)
 
-        self.section_audio_sprites = all_sprites.get_sprites_from_layer(4)
-        self.hideAudioSection()
+        # self.section_audio_sprites = all_sprites.get_sprites_from_layer(4)
+
         # Audio Logic
-        self.section_audio_sources_val = vlc.MediaPlayer("http://radio.doubleclic.fr/radiovaldisere.mp3")
-        #self.section_audio_radio_image = LcarsImage("assets/make_it_snow.jpg", (150, 122))
-        #self.section_audio_radio_image.visible = False
-        #all_sprites.add(self.section_audio_radio_image, layer=4)
-
+        # self.section_audio_sources_val = vlc.MediaPlayer("http://radio.doubleclic.fr/radiovaldisere.mp3")
+        # self.section_audio_radio_image = LcarsImage("assets/make_it_snow.jpg", (150, 122))
+        # self.section_audio_radio_image.visible = False
+        # all_sprites.add(self.section_audio_radio_image, layer=4)
 
         # -------------------------------------------------------------------------------------
 
@@ -91,7 +90,7 @@ class ScreenMain(LcarsScreen):
         Sound("assets/audio/panel/220.wav").play()
 
     def hideAll(self):
-        self.hideAudioSection()
+        audio.hideAudioSection(self)
 
     def update(self, screenSurface, fpsClock):
         if pygame.time.get_ticks() - self.lastClockUpdate > 1000:
@@ -106,28 +105,24 @@ class ScreenMain(LcarsScreen):
         if event.type == pygame.MOUSEBUTTONUP:
             return False
 
-    def show_audio_section(self):
-        if not self.section_audio_sprites[0].visible:
-            for sprite in self.section_audio_sprites:
-                sprite.visible = True
 
-    def hideAudioSection(self):
-        if self.section_audio_sprites[0].visible:
-            for sprite in self.section_audio_sprites:
-                sprite.visible = False
-    
     def weatherHandler(self, item, event, clock):
         self.hideAll()
         self.weather.visible = True
 
     def audio_handler(self, item, event, clock):
         self.hideAll()
-        self.show_audio_section()
+        audio.show_audio_section(self)
         self.weather.visible = False
 
     def audio_handler_play_val(self, item, event, clock):
-        from audio import play_val
-        play_val(self)
+        audio.play_val(self)
+
+    def audio_handler_play_97(self, item, event, clock):
+        audio.play_97(self)
+
+    def audio_handler_play_nova(self, item, event, clock):
+        audio.play_nova(self)
 
     def lights_handler(self, item, event, clock):
         print "Not implemented."
