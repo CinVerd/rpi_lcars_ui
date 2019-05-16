@@ -45,6 +45,7 @@ class LcarsTab(LcarsWidget):
         self.image = image
         self.applyColour(colour)
 
+
 class LcarsButton(LcarsWidget):
     """Button - either rounded or rectangular if rectSize is spcified"""
 
@@ -84,6 +85,51 @@ class LcarsButton(LcarsWidget):
     def changeColour(self, colour):
         self.applyColour(colour)
 
+
+class LcarsHalfButton(LcarsWidget):
+    """Button - half sized for increment and decrement usage """
+
+    # Parameter direction can be up/down/left/right, defines side that curve of button is on.
+    # Are enums a thing in Python?
+    # Default colour?
+    def __init__(self, colour, pos, text, handler=None, direction="up"):
+        if (direction=="up"):
+            image = pygame.image.load("assets/buttons/half_button_u.png").convert()
+        if (direction == "down"):
+            image = pygame.image.load("assets/buttons/half_button_d.png").convert()
+        if (direction == "left"):
+            image = pygame.image.load("assets/buttons/half_button_l.png").convert()
+        if (direction == "right"):
+            image = pygame.image.load("assets/buttons/half_button_r.png").convert()
+        size = (image.get_rect().width, image.get_rect().height)
+
+
+        self.colour = colour
+        self.image = image
+        font = Font("assets/swiss911.ttf", 19)
+        textImage = font.render(text, False, colours.BLACK)
+        image.blit(textImage,
+                   (image.get_rect().width - textImage.get_rect().width - 10,
+                    image.get_rect().height - textImage.get_rect().height - 5))
+
+        LcarsWidget.__init__(self, colour, pos, size, handler)
+        self.applyColour(colour)
+        self.highlighted = False
+        self.beep = Sound("assets/audio/panel/202.wav")
+
+    def handleEvent(self, event, clock):
+        if (event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos)):
+            self.applyColour(colours.WHITE)
+            self.highlighted = True
+            self.beep.play()
+
+        if (event.type == MOUSEBUTTONUP and self.highlighted):
+            self.applyColour(self.colour)
+
+        return LcarsWidget.handleEvent(self, event, clock)
+
+    def changeColour(self, colour):
+        self.applyColour(colour)
         
 class LcarsText(LcarsWidget):
     """Text that can be placed anywhere"""
@@ -109,6 +155,7 @@ class LcarsText(LcarsWidget):
     def setText(self, newText):
         self.renderText(newText)
 
+
 class LcarsBlockLarge(LcarsButton):
     """Left navigation block - large version"""
 
@@ -116,12 +163,14 @@ class LcarsBlockLarge(LcarsButton):
         size = (98, 147)
         LcarsButton.__init__(self, colour, pos, text, handler, size)
 
+
 class LcarsBlockMedium(LcarsButton):
    """Left navigation block - medium version"""
 
    def __init__(self, colour, pos, text, handler=None):
         size = (98, 62)
         LcarsButton.__init__(self, colour, pos, text, handler, size)
+
 
 class LcarsBlockSmall(LcarsButton):
    """Left navigation block - small version"""

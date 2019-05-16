@@ -90,7 +90,7 @@ class ScreenMain(LcarsScreen):
         Sound("assets/audio/panel/220.wav").play()
 
     def hideAll(self):
-        audio.hideAudioSection(self)
+        audio.hide_audio_section(self)
 
     def update(self, screenSurface, fpsClock):
         if pygame.time.get_ticks() - self.lastClockUpdate > 1000:

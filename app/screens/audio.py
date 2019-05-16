@@ -11,6 +11,9 @@ novaColour = colours.PEACH
 
 activeColour = colours.GREY_BLUE
 
+# Each sub part for the main menu should be like this
+# Init/show section/hide section/ handlers
+
 
 def initialize(self, all_sprites):
     all_sprites.add(LcarsButton(colours.PEACH, (200, 127), "VAL", self.audio_handler_play_val),
@@ -25,8 +28,15 @@ def initialize(self, all_sprites):
                     layer=4)
     self.section_audio_sources_nova = vlc.MediaPlayer("https://stream.audioxi.com/NOVA")
 
+    # volume buttons
+    all_sprites.add(LcarsHalfButton(colours.RED_BROWN, (220, 280), "+ ", volume_up(self), "up"),
+                    layer=4)
+
+    all_sprites.add(LcarsHalfButton(colours.RED_BROWN, (290, 280), "-   ", volume_down(self), "down"),
+                    layer=4)
+
     self.section_audio_sprites = all_sprites.get_sprites_from_layer(4)
-    hideAudioSection(self)
+    hide_audio_section(self)
 
 
 def show_audio_section(self):
@@ -35,7 +45,7 @@ def show_audio_section(self):
             sprite.visible = True
 
 
-def hideAudioSection(self):
+def hide_audio_section(self):
     if self.section_audio_sprites[0].visible:
         for sprite in self.section_audio_sprites:
             sprite.visible = False
@@ -73,6 +83,13 @@ def play_nova(self):
         # set button color
         self.section_audio_sprites[2].changeColour(novaColour)
 
+
+def volume_up(self):
+    print "up"
+
+
+def volume_down(self):
+    print "down"
 
 def set_active_button(self, number):
     self.section_audio_sprites[0].changeColour(valColour)
