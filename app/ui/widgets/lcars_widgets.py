@@ -80,6 +80,10 @@ class LcarsButton(LcarsWidget):
             self.applyColour(self.colour)
            
         return LcarsWidget.handleEvent(self, event, clock)
+
+    def changeColour(self, colour):
+        self.applyColour(colour)
+
         
 class LcarsText(LcarsWidget):
     """Text that can be placed anywhere"""
