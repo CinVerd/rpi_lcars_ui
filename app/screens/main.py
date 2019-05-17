@@ -141,6 +141,7 @@ class ScreenMain(LcarsScreen):
     
     def logoutHandler(self, item, event, clock):
         from screens.authorize import ScreenAuthorize
+        pygame.quit()
         self.loadScreen(ScreenAuthorize())
     
     
