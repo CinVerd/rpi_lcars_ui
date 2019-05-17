@@ -1,5 +1,5 @@
 from ui.widgets.lcars_widgets import *
-
+import requests
 
 def initialize(self, all_sprites):
     all_sprites.add(LcarsButton(colours.PEACH, (200, 127), "LIGHTS ON", self.lights_handler_main_on),
@@ -26,7 +26,10 @@ def hide_lights_section(self):
 
 def main_light_on(self):
     print("on")
+    # Python is cool sometimes.
+    r = requests.get('http://localhost:1138/1251/mainlight/on')
 
 
 def main_light_off(self):
     print("off")
+    r = requests.get('http://localhost:1138/1251/mainlight/off')
