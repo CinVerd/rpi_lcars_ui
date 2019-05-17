@@ -15,6 +15,7 @@ activeColour = colours.GREY_BLUE
 # Init/show section/hide section/ handlers
 
 
+# TODO: Handlers can just be below implementations, no need to call back to main.
 def initialize(self, all_sprites):
     all_sprites.add(LcarsButton(colours.PEACH, (200, 127), "VAL", self.audio_handler_play_val),
                     layer=4)
@@ -84,12 +85,14 @@ def play_nova(self):
         self.section_audio_sprites[2].changeColour(novaColour)
 
 
+# TODO: Implement
 def volume_up(self):
     print "up"
 
 
 def volume_down(self):
     print "down"
+
 
 def set_active_button(self, number):
     self.section_audio_sprites[0].changeColour(valColour)

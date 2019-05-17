@@ -3,6 +3,7 @@ import pygame
 from pygame.mixer import Sound
 import vlc
 import audio
+import lights
 from ui import colours
 from ui.widgets.background import LcarsBackgroundImage, LcarsImage
 from ui.widgets.gifimage import LcarsGifImage
@@ -68,7 +69,7 @@ class ScreenMain(LcarsScreen):
         audio.initialize(self, all_sprites)
         # all_sprites.add(LcarsButton(colours.PEACH, (200, 127), "VAL", self.audio_handler_play_val),
         # layer=4)
-
+        lights.initialize(self, all_sprites)
         # self.section_audio_sprites = all_sprites.get_sprites_from_layer(4)
 
         # Audio Logic
@@ -91,6 +92,7 @@ class ScreenMain(LcarsScreen):
 
     def hideAll(self):
         audio.hide_audio_section(self)
+        lights.hide_lights_section(self)
 
     def update(self, screenSurface, fpsClock):
         if pygame.time.get_ticks() - self.lastClockUpdate > 1000:
@@ -125,7 +127,14 @@ class ScreenMain(LcarsScreen):
         audio.play_nova(self)
 
     def lights_handler(self, item, event, clock):
-        print "Not implemented."
+        self.hideAll()
+        lights.show_lights_section(self)
+
+    def lights_handler_main_on(self, item, event, clock):
+        lights.main_light_on(self)
+
+    def lights_handler_main_off(self, item, event, clock):
+        lights.main_light_off(self)
 
     def sensors_handler(self, item, event, clock):
         print "Not implemented."
